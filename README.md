@@ -1,2 +1,11 @@
-# frl_31_binance-leaderboard-selenium-aws
-Using Selenium running on AWS Lambda, Scrape Binance leaderboard on schedule basis (cron job).
+# Binance leaderboard serverless bot 🪙🤖
+> Using AWS Lambda with a schedule, get the updates from  [Binance leaderboard](https://www.binance.com/en/futures-activity/leaderboard)
+
+
+## Setup
+- Setup Telegram Bot:
+    - Create a new Bot Get your 
+    - In [serverless.yml](https://github.com/kfrawee/frl_31_binance-leaderboard-bot-aws/blob/main/serverless.yml):
+
+- Chenge schedule rate:
+    - [Refrence](https://docs.aws.amazon.com/lambda/latest/dg/services-cloudwatchevents-expressions.html)

@@ -4,7 +4,7 @@ from typing import Dict, List
 
 
 import requests
-from http import  HTTPStatus
+from http import HTTPStatus
 import aws_lambda_powertools
 from telegram import Bot, ParseMode
 from telegram.error import RetryAfter, TimedOut
@@ -234,7 +234,9 @@ def get_leader_board_rank() -> Dict:
     try:
         response = requests.post(url, json=data)
         assert response.status_code == HTTPStatus.OK
-        
+
+        print(response.json())
+
     except:
         return {}
 
@@ -249,7 +251,5 @@ def get_user_details(uid: str) -> Dict:
     return
 
 
-
 if __name__ == "__main__":
     top_ten_leaderboard = get_leader_board_rank()
-    

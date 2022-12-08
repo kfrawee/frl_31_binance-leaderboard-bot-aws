@@ -6,14 +6,14 @@ frameworkVersion: "2 || 3"
 plugins:
   - "serverless-python-requirements"
 
-# layers:
-#   pybinance:
-#     path: layers/pybinance
-#     description: |
-#       Lambda layer contains helper functions for aws services 
-#       and other common functions to avoid repeating the code.
-#     compatibleRuntimes:
-#       - python3.9
+layers:
+  pybinance:
+    path: layers/pybinance
+    description: |
+      Lambda layer contains helper functions for aws services 
+      and other common functions to avoid repeating the code.
+    compatibleRuntimes:
+      - python3.9
 
 custom:
   pythonRequirements:
@@ -25,7 +25,7 @@ provider:
   architecture: arm64
   region: ${opt:region, 'us-east-1'}
   stage: ${opt:stage, 'dev'}
-  timeout: 900 # 15 * 60
+  timeout: 29
   versionFunctions: false
 
 # TO SETUP TELEGRAM BOT: 
@@ -91,9 +91,13 @@ functions:
   binanceBot:
     handler: src.handlers.bot.index.handler
     description: Main bot handler.
+    memorySize: 512
+    timeout: 900
     # layers:
     #   - Ref: PybinanceLambdaLayer
     events:
-      - schedule: rate(5 minutes)
+      - schedule: rate(5 minutes) # TEST
+      # - schedule: rate(1 hour) # PRODUCTION
+      # - schedule: rate(n hours) # PRODUCTION
 
 
