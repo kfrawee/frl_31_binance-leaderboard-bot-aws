@@ -4,7 +4,7 @@ from pybinance.utils.helpers import (
     get_leader_board_rank,
     get_user_details,
 )
-# from pybinance.utils.telegram_bot import TelegramBot
+from pybinance.utils.telegram_bot import TelegramBot
 
 
 def handler(event, _):

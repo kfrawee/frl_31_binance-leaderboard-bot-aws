@@ -7,7 +7,7 @@ import aws_lambda_powertools
 import requests
 from requests.exceptions import ConnectionError, ConnectTimeout, HTTPError
 
-from telegram_bot import TelegramBot
+from .telegram_bot import TelegramBot
 
 
 logger = aws_lambda_powertools.Logger(
