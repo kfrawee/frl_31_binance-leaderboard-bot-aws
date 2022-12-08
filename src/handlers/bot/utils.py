@@ -2,6 +2,9 @@
 import os
 from typing import Dict, List
 
+
+import requests
+from http import  HTTPStatus
 import aws_lambda_powertools
 from telegram import Bot, ParseMode
 from telegram.error import RetryAfter, TimedOut
@@ -227,6 +230,14 @@ def get_leader_board_rank() -> Dict:
         "isShared": True,
         "isTrader": False,
     }
+
+    try:
+        response = requests.post(url, json=data)
+        assert response.status_code == HTTPStatus.OK
+        
+    except:
+        return {}
+
     return
 
 
@@ -234,3 +245,11 @@ def get_user_details(uid: str) -> Dict:
     """
     Get user details
     """
+    # https://www.binance.com/en/futures-activity/leaderboard/user?encryptedUid=F45BBD3F4C148BFCE413B0A343A1BF97
+    return
+
+
+
+if __name__ == "__main__":
+    top_ten_leaderboard = get_leader_board_rank()
+    
