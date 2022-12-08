@@ -1,0 +1,7 @@
+aws-lambda-powertools==1.29.2
+lambda-decorators==0.6.0
+simplejson==3.17.6
+pyparsing==3.0.1
+pyyaml==6.0
+requests==2.27.1
+python-telegram-bot==13.14

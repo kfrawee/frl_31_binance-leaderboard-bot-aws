@@ -127,3 +127,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+.serverless/
+node_modules
+__pycache__/
+
+.vscode
+
+# .coverage
+# .coveragerc
