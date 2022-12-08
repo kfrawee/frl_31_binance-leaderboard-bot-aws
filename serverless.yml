@@ -28,15 +28,6 @@ provider:
   timeout: 29
   versionFunctions: false
 
-# TO SETUP TELEGRAM BOT: 
-# 1. Create a new chat group.
-# 2. Add the following bots to the chat.
-#   - TELEGRAM_BOT_API_KEY: Message (@BotFather). Create your Bot, 
-#       and get your Bot API key by creating a bot on Telegram .
-#   - CHAT_ID: Add (@RawDataBot) to your group and type: "/start" to get the chat id. 
-#       REF: https://www.alphr.com/find-chat-id-telegram/
-#   OR
-#   - CHAT_ID: Send a message to @username_to_id_bot with invitation link.
   environment:
     SERVICE_NAME: ${self:service}
     TELEGRAM_BOT_API_KEY: 5280766845:AAFXfHgOeuTUbXlDOF_bcsKIs8H_jWQ1O-Q
@@ -62,10 +53,10 @@ functions:
     description: Main bot handler.
     memorySize: 512
     timeout: 900
-    # layers:
-    #   - Ref: PybinanceLambdaLayer
-    events:
-      - schedule: rate(5 minutes) # TEST
+    layers:
+      - Ref: PybinanceLambdaLayer
+    # events:
+      # - schedule: rate(5 minutes) # TEST
       # - schedule: rate(1 hour) # PRODUCTION
       # - schedule: rate(n hours) # PRODUCTION
 
