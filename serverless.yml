@@ -42,40 +42,6 @@ provider:
     TELEGRAM_BOT_API_KEY: 5280766845:AAFXfHgOeuTUbXlDOF_bcsKIs8H_jWQ1O-Q
     TELEGRAM_CHAT_ID: -666728785
 
-  # iam:
-  #   role:
-  #     statements:
-  #       - Effect: "Allow"
-  #         Action:
-  #           - "s3:PutObject"
-  #           - "s3:GetObject"
-  #           - "s3:DeleteObject"
-  #         Resource:
-  #           Fn::Join:
-  #             - ""
-  #             - - "arn:aws:s3:::"
-  #               - "Ref": "MainBucket"
-  #               - "/*"
-  #       - Effect: "Allow"
-  #         Action:
-  #           - "dynamodb:GetItem"
-  #           - "dynamodb:PutItem"
-  #           - "dynamodb:UpdateItem"
-  #           - "dynamodb:DeleteItem"
-  #           - "dynamodb:Query"
-  #           - "dynamodb:Scan"
-  #         Resource:
-  #           - Fn::GetAtt:
-  #               - MainTable
-  #               - Arn
-  #           - Fn::GetAtt:
-  #               - MainTable
-  #               - StreamArn
-  #       - Effect: "Allow"
-  #         Action:
-  #           - "rekognition:DetectLabels"
-  #         Resource: "*"
-
   stackTags:
     "name": ${self:service}
 
@@ -86,6 +52,9 @@ package:
     - "!requirements.txt"
     - "!README.md"
     - "!.gitignore"
+    - "!dev/**"
+    - "!layers/**"
+    - "!.venv/**"
 
 functions:
   binanceBot:

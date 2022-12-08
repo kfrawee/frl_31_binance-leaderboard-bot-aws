@@ -1,10 +1,10 @@
 from datetime import datetime
 from pybinance.utils.helpers import (
-    TelegramBot,
     get_leader_board_rank,
     get_user_details,
     logger,
 )
+from pybinance.utils.telegram_bot import TelegramBot
 
 
 def handler(event, _):
