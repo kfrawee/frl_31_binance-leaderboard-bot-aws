@@ -1,6 +1,6 @@
 import os
-from typing import Dict
-
+from typing import Dict, List, Generator
+from time import sleep
 from telegram import Bot, ParseMode
 
 # from telegram.error import RetryAfter, TimedOut
@@ -9,6 +9,23 @@ from .helpers import logger
 
 TELEGRAM_BOT_API_KEY = os.getenv("TELEGRAM_BOT_API_KEY")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
+chunk_size = 15
+
+
+def split_data(a_list: List, chunk_size: int = chunk_size) -> Generator:
+    """
+    Split a list of data into chunks of a given size.
+
+    Args:
+        a_list (List): List to split.
+        chuck_size:  Size of chunks.
+
+    Returns:
+        Generator: Generator of chunks.
+    """
+    for i in range(0, len(a_list), chunk_size):
+        yield a_list[i : i + chunk_size]
 
 
 class TelegramBot:
@@ -23,6 +40,20 @@ class TelegramBot:
             "SHORT": "🔴",
             "UP": "⬆️",
             "DOWN": "⬇️",
+            "+VE": "🟩",
+            "-VE": "🟥",
+        }
+        self.rank_emoji = {
+            1: "1️⃣",
+            2: "2️⃣",
+            3: "3️⃣",
+            4: "4️⃣",
+            5: "5️⃣",
+            6: "6️⃣",
+            7: "7️⃣",
+            8: "8️⃣",
+            9: "9️⃣",
+            10: "🔟",
         }
 
     def _send_message(
@@ -47,132 +78,173 @@ class TelegramBot:
             # print(message_)
             logger.debug(message_)
 
-        # if emoji in self.emojis.keys():
-        #     message = f"{self.emojis.get(emoji)}  {message}"
+        if emoji in self.emojis.keys():
+            message = f"{self.emojis.get(emoji)}  {message}"
 
         try:
             self.bot_client.send_message(
                 chat_id=self.chat_id, text=f"{message}", parse_mode=ParseMode.HTML
             )
         except Exception as e:
-            # print(f"Error sending message, '{e.message}'. Retrying in 1 second.")
-            logger.debug(f"Error sending message, '{e.message}'. Retrying in 1 second.")
-
-            # maybe timeout - try to cool down
-            from time import sleep
-
-            sleep(1)
-            try:
-                self.bot_client.send_message(
-                    chat_id=self.chat_id, text=f"{message}", parse_mode=ParseMode.HTML
-                )
-            except Exception as e:  # -_-
-                # print(f"Error sending message again, '{e.message}'.")
-                logger.debug(f"Error sending message again, '{e.message}'.")
-
-    # def send_new_item_added(
-    #     self, item_title: str, item_url: str, item_price: float
-    # ) -> None:
-    #     """
-    #     Send message with new item added.
-
-    #     Args:
-    #         item_title (str):  name of the item.
-    #         item_url (str): url of the item.
-    #         item_price (float): price of the item.
-    #     Returns:
-    #         None
-    #     """
-    #     emoji = "ADD"
-    #     message = (
-    #         f"<b>Hey! A new item was added!</b>\n"
-    #         f"<a href='{item_url}'>{item_title}</a> - <b>Price:</b> ${item_price}\n"
-    #     )
-
-    #     self._send_message(message=message, emoji=emoji)
-
-    # def send_new_items_added(self, items_count: int) -> None:
-    #     """
-    #     Send message with new items added.
-
-    #     Args:
-    #         items_count (int):  number of newly added items.
-    #     Returns:
-    #         None
-    #     """
-    #     emoji = "ADD"
-    #     message = f"<b>Hey! New {items_count} items were added!</b>\n"
-
-    #     self._send_message(message=message, emoji=emoji, stdout=True)
-
-    # def send_new_items_updated(self, items_count: int) -> None:
-    #     """
-    #     Send message with new items updated.
-
-    #     Args:
-    #         items_count (int):  number of newly updated items.
-    #     Returns:
-    #         None
-    #     """
-    #     emoji = "UPDATE"
-    #     message = f"<b>Hey! New {items_count} items were updated!</b>\n"
-
-    #     self._send_message(message=message, emoji=emoji, stdout=True)
-
-    # def send_price_update(
-    #     self,
-    #     item_title: str,
-    #     item_url: str,
-    #     item_old_price: float,
-    #     item_new_price: float,
-    #     send_all_updates: bool,
-    # ) -> None:
-    #     """
-    #     Send message if item's price is updated.
-
-    #     Args:
-    #         item_title (str): name of the item.
-    #         item_url (str): url of the item.
-    #         item_old_price (float): old price of the item.
-    #         item_new_price (float): new price of the item.
-    #         send_all_updates (bool): Either to send all updated prices (increased or decreased) or only the decreased prices.
-    #     Returns:
-    #         None
-    #     """
-    #     if item_old_price == item_new_price:
-    #         return
-    #     elif item_old_price > item_new_price:
-    #         emoji = "DOWN"
-    #     else:
-    #         emoji = "UP"
-    #         if not send_all_updates:
-    #             return
-
-    #     message = (
-    #         "<b>Hey! An item's price has been updated!</b> \n"
-    #         f"<a href='{item_url}'>{item_title}</a> \n"
-    #         f"<b>Old Price:</b> ${item_old_price} - <b>New Price:</b> ${item_new_price}"
-    #     )
-
-    #     self._send_message(message=message, emoji=emoji)
+            logger.debug(f"Error sending message, '{e.message}'.")
 
     def send_summary(self, data: Dict) -> None:
         """
         Send summary of the data.
 
         Args:
-            data (Dict): raw data prepare and send.
+            data (Dict): raw data to prepare and send.
         Returns:
             None
         """
 
+        message = (
+            "<u><b>📃 Top 10 Traders summary - <i>by Daily PNL</i></b></u>\n"
+            f"<i>Updated On: {data.get('datetime')}\n\n</i>"
+        )
+
         users_data = data.get("data")
 
-        message = (
-            "<b> Top 10 Traders by Daily PNL </b>\n"
-            f"<h4>Datetime: {data.get('datetime')}</h4>"
-        )
+        for i, user_data in enumerate(users_data):
+            profile_url = f"https://www.binance.com/en/futures-activity/leaderboard/user?encryptedUid={user_data.get('encryptedUid')}"
+            name = user_data.get("name")
+
+            daily_roi = round((user_data.get("performance").get("Daily_ROI")) * 100, 2)
+            if daily_roi > 0:
+                daily_roi_str = self.emojis.get("+VE") + " " + str(daily_roi) + "%"
+            else:
+                daily_roi_str = self.emojis.get("-VE") + " " + str(daily_roi) + "%"
+
+            daily_pnl = user_data.get("performance").get("Daily_PNL")
+            if daily_pnl > 0:
+                daily_pnl_str = self.emojis.get("+VE") + " $" + str(daily_pnl)
+            else:
+                daily_pnl_str = self.emojis.get("-VE") + " $" + str(daily_pnl)
+
+            last_trade = user_data.get("performance").get("Last Trade")
+
+            message += (
+                f"{self.rank_emoji.get(i + 1)} "
+                f"Rank: {user_data.get('rank')}"
+                " - "
+                f"<a href='{profile_url}'>{name}</a>\n"
+                f"Daily ROI: {daily_roi_str}"
+                " - "
+                f"Daily PNL: {daily_pnl_str}"
+                f"\n<i>Last Trade: {last_trade}</i>\n\n"
+            )
+
         self._send_message(message=message)
+
+    def send_details(self, data: Dict) -> None:
+        """
+        Send details of the data.
+
+        Args:
+            data (Dict): raw data to prepare and send.
+        Returns:
+            None
+        """
+
+        updated_on = data.get("datetime")
+        users_data = data.get("data")
+        for i, user_data in enumerate(users_data):
+            profile_url = f"https://www.binance.com/en/futures-activity/leaderboard/user?encryptedUid={user_data.get('encryptedUid')}"
+            name = user_data.get("name")
+
+            message = (
+                f"<b><u>📈 Trader's Details</u></b>\n"
+                f"{self.rank_emoji.get(i+1)} <a href='{profile_url}'>{name}</a>"
+                " - "
+                f"<i>Updated On: {updated_on}\n\n</i>"
+                "<u>Positions:</u>\n"
+                f"<i>Binance last update: {user_data.get('positions').get('Last Update')}</i>\n\n"
+            )
+
+            user_positions = user_data.get("positions").get("Positions")
+
+            # we can not send all details at once, split list into chunks
+            if len(user_positions) > chunk_size:
+                part_i = 0
+                for partial_positions in split_data(user_positions):
+                    message = (
+                        f"<b><u>📈 Trader's Details</u></b>\n"
+                        f"{self.rank_emoji.get(i+1)} <a href='{profile_url}'>{name}</a>"
+                        " - "
+                        f"<i>Updated On: {updated_on}\n\n</i>"
+                        "<u>Positions:</u>\n"
+                        f"<i>Binance last update: {user_data.get('positions').get('Last Update')}</i>\n\n"
+                    )
+                    message += (
+                        f"<i>Too many positions to send, sending positions in {chunk_size}s</i>"
+                    )
+                    part_i += 1
+                    message += f"<i> - Part {part_i}:</i>\n\n"
+
+                    for position_data in partial_positions:
+                        symbol = position_data.get("Symbol")
+                        type_ = position_data.get("type")
+                        leverage = position_data.get("leverage")
+                        amount = position_data.get("amount", 100)
+                        entry_price = round(position_data.get("entryPrice"), 3)
+                        market_price = round(position_data.get("marketPrice"), 3)
+
+                        pnl = round(position_data.get("PNL"), 2)
+                        if pnl > 0:
+                            pnl_str = self.emojis.get("+VE") + " " + str(pnl)
+                        else:
+                            pnl_str = self.emojis.get("-VE") + " " + str(pnl)
+
+                        poe = round(position_data.get("POE") * 100, 2)
+                        if poe > 0:
+                            poe_str = self.emojis.get("+VE") + " " + str(poe) + "%"
+                        else:
+                            poe_str = self.emojis.get("-VE") + " " + str(poe) + "%"
+                        datetime_ = position_data.get("datetime")
+
+                        message += f"🪙 Symbol: {symbol}"
+                        message += f" - {self.emojis.get(type_.upper())} {type_}"
+                        message += f" - Leverage: {leverage}x\n"
+                        message += f"💰 Amount: {amount}\n"
+                        message += f"Entry Price: {entry_price} | Market Price: {market_price}\n"
+                        message += f"PNL: {pnl_str} | POE: {poe_str}\n"
+                        message += f"<i>Datetime: {datetime_}</i>\n\n"
+
+                    self._send_message(message)
+            
+            else:
+                for position_data in user_positions:
+                    symbol = position_data.get("Symbol")
+                    type_ = position_data.get("type")
+                    leverage = position_data.get("leverage")
+                    amount = position_data.get("amount", 100)
+                    entry_price = round(position_data.get("entryPrice"), 3)
+                    market_price = round(position_data.get("marketPrice"), 3)
+
+                    pnl = round(position_data.get("PNL"), 2)
+                    if pnl > 0:
+                        pnl_str = self.emojis.get("+VE") + " " + str(pnl)
+                    else:
+                        pnl_str = self.emojis.get("-VE") + " " + str(pnl)
+
+                    poe = round(position_data.get("POE") * 100, 2)
+                    if poe > 0:
+                        poe_str = self.emojis.get("+VE") + " " + str(poe) + "%"
+                    else:
+                        poe_str = self.emojis.get("-VE") + " " + str(poe) + "%"
+                    datetime_ = position_data.get("datetime")
+
+                    message += f"🪙 Symbol: {symbol}"
+                    message += f" - {self.emojis.get(type_.upper())} {type_}"
+                    message += f" - Leverage: {leverage}x\n"
+                    message += f"💰 Amount: {amount}\n"
+                    message += (
+                        f"Entry Price: {entry_price} | Market Price: {market_price}\n"
+                    )
+                    message += f"PNL: {pnl_str} | POE: {poe_str}\n"
+                    message += f"<i>Datetime: {datetime_}</i>\n\n"
+
+                self._send_message(message)
 
     def send_alert(self, message: str) -> None:
         """

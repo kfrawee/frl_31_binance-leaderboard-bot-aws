@@ -266,6 +266,7 @@ def clean_positions_data(positions_data: Dict) -> Dict:
                 "Symbol": data.get("symbol"),
                 "leverage": data.get("leverage"),
                 "type": "Long" if data.get("amount") > 0 else "Short",
+                "amount": data.get("amount"),
                 "entryPrice": data.get("entryPrice"),
                 "marketPrice": data.get("markPrice"),
                 "PNL": data.get("pnl"),

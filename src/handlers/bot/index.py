@@ -6,7 +6,19 @@ from operator import itemgetter
 
 import nest_asyncio
 
-from pybinance.utils.helpers import (
+# from pybinance.utils.helpers import (
+#     generate_user_data,
+#     get_encrypted_uids,
+#     get_leader_board_rank,
+#     get_trader_performance,
+#     get_trader_positions,
+#     logger,
+# )
+# from pybinance.utils.telegram_bot import TelegramBot
+
+
+## local
+from .utils.helpers import (
     generate_user_data,
     get_encrypted_uids,
     get_leader_board_rank,
@@ -14,7 +26,8 @@ from pybinance.utils.helpers import (
     get_trader_positions,
     logger,
 )
-from pybinance.utils.telegram_bot import TelegramBot
+from .utils.telegram_bot import TelegramBot
+
 
 nest_asyncio.apply()
 
@@ -63,8 +76,11 @@ def handler(event, _):
 
     results = {"data": sorted_users_data, "datetime": str(now)}
 
-
-    # report to telegram
+    # Report to telegram
+    # 1. summary report
+    Telegram_bot_client.send_summary(results)
+    # 2. detailed report for each user
+    Telegram_bot_client.send_details(results)
 
     logger.debug(f"Elapsed time: {(datetime.utcnow() - now).total_seconds()}")
     return event
