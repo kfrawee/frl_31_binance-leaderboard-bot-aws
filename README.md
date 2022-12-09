@@ -1,5 +1,5 @@
 # Binance leaderboard serverless bot 🪙🤖
-> Using AWS Lambda with a schedule, get the updates from  [Binance leaderboard](https://www.binance.com/en/futures-activity/leaderboard)
+> Using AWS Lambda with a schedule, to get the updates from [Binance leaderboard](https://www.binance.com/en/futures-activity/leaderboard)
 
 
 ## Setup
