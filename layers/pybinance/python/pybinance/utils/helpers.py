@@ -34,7 +34,7 @@ def extract_datetime(timestamp: int) -> str:
     Returns:
         datetime (str): Datetime.
     """
-    if len(timestamp) > 10:
+    if len(str(timestamp)) > 10:
         timestamp = timestamp // 1000  # remove ms
 
     return str(datetime.fromtimestamp(timestamp))
@@ -206,38 +206,41 @@ def clean_performance_data(performance_data: Dict) -> Dict:
         if data.get("periodType") == "DAILY":
             if data.get("statisticsType") == "ROI":
                 cleaned_performance_data.update(
-                    Daily_ROI=round(data.get("value")),
+                    Daily_ROI=round(data.get("value"), 6),
                 )
             elif data.get("statisticsType") == "PNL":
                 cleaned_performance_data.update(
-                    Daily_PNL=round(data.get("value")),
+                    Daily_PNL=round(data.get("value"), 2),
                 )
-        if data.get("periodType") == "WEEKLY":
+
+        elif data.get("periodType") == "WEEKLY":
             if data.get("statisticsType") == "ROI":
                 cleaned_performance_data.update(
-                    Weekly_ROI=round(data.get("value")),
+                    Weekly_ROI=round(data.get("value"), 6),
                 )
             elif data.get("statisticsType") == "PNL":
                 cleaned_performance_data.update(
-                    Weekly_PNL=round(data.get("value")),
+                    Weekly_PNL=round(data.get("value"), 2),
                 )
-        if data.get("periodType") == "MONTHLY":
+
+        elif data.get("periodType") == "MONTHLY":
             if data.get("statisticsType") == "ROI":
                 cleaned_performance_data.update(
-                    Monthly_ROI=round(data.get("value")),
+                    Monthly_ROI=round(data.get("value"), 6),
                 )
             elif data.get("statisticsType") == "PNL":
                 cleaned_performance_data.update(
-                    Monthly_PNL=round(data.get("value")),
+                    Monthly_PNL=round(data.get("value"), 2),
                 )
-        if data.get("periodType") == "ALL":
+
+        elif data.get("periodType") == "ALL":
             if data.get("statisticsType") == "ROI":
                 cleaned_performance_data.update(
-                    All_ROI=round(data.get("value")),
+                    All_ROI=round(data.get("value"), 6),
                 )
             elif data.get("statisticsType") == "PNL":
                 cleaned_performance_data.update(
-                    All_PNL=round(data.get("value")),
+                    All_PNL=round(data.get("value"), 2),
                 )
 
     return cleaned_performance_data
@@ -259,7 +262,7 @@ def clean_positions_data(positions_data: Dict) -> Dict:
     cleaned_positions_data = {
         "Last Update": extract_datetime(positions_data.get("updateTimeStamp")),
     }
-    
+
     cleaned_positions_data.update(
         Positions=[
             {
@@ -267,7 +270,7 @@ def clean_positions_data(positions_data: Dict) -> Dict:
                 "leverage": data.get("leverage"),
                 "type": "Long" if data.get("amount") > 0 else "Short",
                 "entryPrice": data.get("entryPrice"),
-                "marketPrice": data.get("marketPrice"),
+                "marketPrice": data.get("markPrice"),
                 "PNL": data.get("pnl"),
                 "POE": data.get("roe"),
                 "datetime": extract_datetime(data.get("updateTimeStamp")),
@@ -302,7 +305,3 @@ def generate_user_data(
         "performance": clean_performance_data(performance_data),
         "positions": clean_positions_data(position_data),
     }
-
-
-if __name__ == "__main__":
-    top_ten_leaderboard = get_leader_board_rank()
