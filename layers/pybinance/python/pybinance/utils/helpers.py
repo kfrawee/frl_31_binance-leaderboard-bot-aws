@@ -11,7 +11,6 @@ from requests.exceptions import ConnectionError, ConnectTimeout, HTTPError
 from .telegram_bot import TelegramBot
 
 
-
 logger = aws_lambda_powertools.Logger(
     service=os.getenv("SERVICE_NAME", ""), level="DEBUG"
 )
@@ -22,6 +21,7 @@ headers = {
     "Content-Type": "application/json",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36",
 }
+
 
 def get_leader_board_rank() -> Optional[List[Dict]]:
     """
@@ -48,81 +48,145 @@ def get_leader_board_rank() -> Optional[List[Dict]]:
         assert response.status_code == HTTPStatus.OK
 
         response_json = response.json()
-        top_ten_data = response_json.get("data")[:10]
-        
+        data = response_json.get("data")
+
     except (HTTPError, ConnectionError, ConnectTimeout) as e:
-        error_msg = f"Error while trying to getLeaderboardRank: {e}."
+        error_msg = f"Error while trying to connect to Binance API: {e}"
         logger.error(error_msg)
         telegram_bot_client.send_error(error_msg)
-        return 
-    
+        return
+
     except AssertionError:
         error_msg = f"Binance responded with statusCode: {response.status_code}"
         logger.error(error_msg)
         telegram_bot_client.send_error(error_msg)
-        return 
-        
+        return
+
     except Exception as e:
         error_msg = f"Unexpected error: {e}. Traceback: {traceback.format_exc()}"
         logger.error(error_msg)
         telegram_bot_client.send_error(error_msg)
         return
 
-    return top_ten_data
+    return data[:10]  # only top 10
 
-def get_uids(data: List) -> List:
+
+def get_encrypted_uids(data: List) -> List:
     """
     Return a list of encryptedUids (uids) from data.
 
     Args:
         data (List): List of traders data.
-    
-    Returns:
-        uids (List): List of traders ids.
-    """
-    ids = []
-    for user_data in data:
-        ids.append(user_data.get("encryptedUid"))
-    
-    return ids
 
-def get_trader_performance(id:str) ->Dict: 
+    Returns:
+        encryptedUids (List): List of traders ids.
     """
-    Get trader performance data using encryptedUid (uid).
+    return [user_data.get("encryptedUid") for user_data in data]
+
+
+def get_trader_performance(encryptedUid: str) -> Dict:
+    """
+    Get trader performance data using encryptedUid.
 
     Args:
-        uid (str): Trader encryptedUid (id).
-    
+        encryptedUid (str): Trader encryptedUid (id).
+
     Returns:
         performance_data (Dict): Trader performance data.
     """
-    return {}
+    url = "https://www.binance.com/bapi/futures/v3/public/future/leaderboard/getLeaderboardRank"
+    request_body = {
+        "encryptedUid": encryptedUid,
+        "tradeType": "PERPETUAL",
+    }
 
-def get_trader_positions(id:str)-> List:
+    try:
+        response = requests.post(url, json=request_body, headers=headers)
+        assert response.status_code == HTTPStatus.OK
+
+        response_json = response.json()
+        date = response_json.get("data")
+
+    except (HTTPError, ConnectionError, ConnectTimeout) as e:
+        error_msg = f"Error while trying to connect to Binance API: {e}"
+        logger.error(error_msg)
+        telegram_bot_client.send_error(error_msg)
+        return
+
+    except AssertionError:
+        error_msg = f"Binance responded with statusCode: {response.status_code}"
+        logger.error(error_msg)
+        telegram_bot_client.send_error(error_msg)
+        return
+
+    except Exception as e:
+        error_msg = f"Unexpected error: {e}. Traceback: {traceback.format_exc()}"
+        logger.error(error_msg)
+        telegram_bot_client.send_error(error_msg)
+        return
+    return date
+
+
+def get_trader_positions(encryptedUid: str) -> Dict:
     """
     Get trader positions data using encryptedUid (uid).
 
     Args:
-        uid (str): Trader encryptedUid (id).
-    
-    Returns:
-        positions_data (Dict): List of trader positions data.
-    """
-    return []
+        encryptedUid (str): Trader encryptedUid (id).
 
-def generate_user_data(id: str, performance_data: Dict, position_data: List)-> Dict:
+    Returns:
+        positions_data (Dict): Trader positions data.
     """
-    Generate full trader data; performance and positions encryptedUid (uid).
+    url = "https://www.binance.com/bapi/futures/v1/public/future/leaderboard/getOtherPosition"
+    request_body = {
+        "encryptedUid": encryptedUid,
+        "tradeType": "PERPETUAL",
+    }
+
+    try:
+        response = requests.post(url, json=request_body, headers=headers)
+        assert response.status_code == HTTPStatus.OK
+
+        response_json = response.json()
+        date = response_json.get("data")
+
+    except (HTTPError, ConnectionError, ConnectTimeout) as e:
+        error_msg = f"Error while trying to connect to Binance API: {e}"
+        logger.error(error_msg)
+        telegram_bot_client.send_error(error_msg)
+        return
+
+    except AssertionError:
+        error_msg = f"Binance responded with statusCode: {response.status_code}"
+        logger.error(error_msg)
+        telegram_bot_client.send_error(error_msg)
+        return
+
+    except Exception as e:
+        error_msg = f"Unexpected error: {e}. Traceback: {traceback.format_exc()}"
+        logger.error(error_msg)
+        telegram_bot_client.send_error(error_msg)
+        return
+    return date
+
+
+def generate_user_data(rank_data: Dict, performance_data: Dict, position_data: Dict) -> Dict:
+    """
+    Generate full trader data; rank, performance and positions data.
 
     Args:
-        uid (str): Trader encryptedUid (id).
+        rank_data (str): Trader rank data.
         performance_data (Dict): Trader performance data.
         positions_data (Dict): List of trader positions data.
-    
+
     Returns:
         user_data (Dict): Trader's data.
     """
+    # amount +ve short
+    # amount -ve long
+
     return
+
 
 if __name__ == "__main__":
     top_ten_leaderboard = get_leader_board_rank()
