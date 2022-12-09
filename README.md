@@ -14,7 +14,7 @@
 #   OR
 #   - CHAT_ID: Send a message to @username_to_id_bot with invitation link. -->
     - Create a new Bot Get your 
-    - In [serverless.yml](https://github.com/kfrawee/frl_31_binance-leaderboard-bot-aws/blob/main/serverless.yml#L42-L43):
+    - In [serverless.yml](https://github.com/kfrawee/frl_31_binance-leaderboard-bot-aws/blob/main/serverless.yml):
         - WIP1
         - WIP2
 

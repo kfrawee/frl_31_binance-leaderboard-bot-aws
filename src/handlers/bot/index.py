@@ -90,3 +90,7 @@ def handler(event, _):
         f"Elapsed time #total: {(datetime.utcnow() - start_datetime).total_seconds()}"
     )
     return event
+
+
+if __name__ == "__main__":
+    handler(_, _)
