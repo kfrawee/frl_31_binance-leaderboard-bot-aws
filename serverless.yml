@@ -51,8 +51,7 @@ functions:
   binanceBot:
     handler: src.handlers.bot.index.handler
     description: Main bot handler.
-    memorySize: 512
-    timeout: 900
+    memorySize: 1024 # test increase to compare time
     layers:
       - Ref: PybinanceLambdaLayer
     # events:
