@@ -57,7 +57,7 @@ def parallel_f(i: int, trader_rank_data: Dict, uids: List):
 
 
 def handler(event, _):
-    now = datetime.utcnow()
+    start_datetime = datetime.utcnow()
 
     rank_raw_data = get_leader_board_rank()
     uids = get_encrypted_uids(rank_raw_data)
@@ -74,7 +74,11 @@ def handler(event, _):
     # sort the list by rank
     sorted_users_data = sorted(users_data, key=itemgetter("rank"))
 
-    results = {"data": sorted_users_data, "datetime": str(now)}
+    results = {"data": sorted_users_data, "datetime": str(start_datetime)}
+
+    logger.debug(
+        f"Elapsed time #before_telegram: {(datetime.utcnow() - start_datetime).total_seconds()}"
+    )
 
     # Report to telegram
     # 1. summary report
@@ -82,5 +86,7 @@ def handler(event, _):
     # 2. detailed report for each user
     Telegram_bot_client.send_details(results)
 
-    logger.debug(f"Elapsed time: {(datetime.utcnow() - now).total_seconds()}")
+    logger.debug(
+        f"Elapsed time #total: {(datetime.utcnow() - start_datetime).total_seconds()}"
+    )
     return event

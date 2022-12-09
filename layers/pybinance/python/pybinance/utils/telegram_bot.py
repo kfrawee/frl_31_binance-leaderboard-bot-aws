@@ -1,6 +1,5 @@
 import os
 from typing import Dict, List, Generator
-from time import sleep
 from telegram import Bot, ParseMode
 
 # from telegram.error import RetryAfter, TimedOut
@@ -10,7 +9,7 @@ from .helpers import logger
 TELEGRAM_BOT_API_KEY = os.getenv("TELEGRAM_BOT_API_KEY")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-chunk_size = 15
+chunk_size = 20 # chuck size to split the positions
 
 
 def split_data(a_list: List, chunk_size: int = chunk_size) -> Generator:
