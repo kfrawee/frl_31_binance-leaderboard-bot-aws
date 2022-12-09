@@ -256,9 +256,6 @@ def clean_positions_data(positions_data: Dict) -> Dict:
     Returns:
         cleaned_positions_data (Dict): Cleaned trader positions data.
     """
-    # amount +ve short
-    # amount -ve long
-
     cleaned_positions_data = {
         "Last Update": extract_datetime(positions_data.get("updateTimeStamp")),
     }
