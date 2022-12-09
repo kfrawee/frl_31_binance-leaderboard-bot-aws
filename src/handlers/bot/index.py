@@ -1,15 +1,70 @@
+import asyncio
+import json
 from datetime import datetime
+from typing import Dict, List
+from operator import itemgetter
+
+import nest_asyncio
+
 from pybinance.utils.helpers import (
-    logger,
+    generate_user_data,
+    get_encrypted_uids,
     get_leader_board_rank,
-    get_user_details,
+    get_trader_performance,
+    get_trader_positions,
+    logger,
 )
 from pybinance.utils.telegram_bot import TelegramBot
 
+nest_asyncio.apply()
+
+users_data = []
+Telegram_bot_client = TelegramBot()
+
+
+def background(f):
+    def wrapped(*args, **kwargs):
+        return asyncio.get_event_loop().run_in_executor(None, f, *args, **kwargs)
+
+    return wrapped
+
+
+@background
+def parallel_f(i: int, trader_rank_data: Dict, uids: List):
+    user_rank = i + 1
+    logger.info(f"Processing user {str(user_rank).zfill(2)} uid: {uids[i]}")
+
+    performance_data = get_trader_performance(uids[i])
+    positions_data = get_trader_positions(uids[i])
+    user_data = generate_user_data(
+        user_rank, trader_rank_data, performance_data, positions_data
+    )
+
+    users_data.append(user_data)
+
 
 def handler(event, _):
-    logger.info(event)
-    logger.info(f"Time: {datetime.utcnow()}")
-    logger.info("TEST")
+    now = datetime.utcnow()
 
+    rank_raw_data = get_leader_board_rank()
+    uids = get_encrypted_uids(rank_raw_data)
+
+    loop = asyncio.get_event_loop()
+    looper = asyncio.gather(
+        *[
+            parallel_f(i, trader_rank_data, uids)
+            for i, trader_rank_data in enumerate(rank_raw_data)
+        ]
+    )
+    loop.run_until_complete(looper)
+
+    # sort the list by rank
+    sorted_users_data = sorted(users_data, key=itemgetter("rank"))
+
+    results = {"data": sorted_users_data, "datetime": str(now)}
+
+
+    # report to telegram
+
+    logger.debug(f"Elapsed time: {(datetime.utcnow() - now).total_seconds()}")
     return event
