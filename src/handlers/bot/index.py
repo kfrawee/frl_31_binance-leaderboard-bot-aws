@@ -1,19 +1,25 @@
+import os
 import asyncio
 from datetime import datetime
 from operator import itemgetter
 from typing import Dict, List
 
+import aws_lambda_powertools
 import nest_asyncio
+
 from pybinance.utils.helpers import (
     generate_user_data,
     get_encrypted_uids,
     get_leader_board_rank,
     get_trader_performance,
     get_trader_positions,
-    logger,
 )
 from pybinance.utils.telegram_bot import TelegramBot
 
+
+logger = aws_lambda_powertools.Logger(
+    service=os.getenv("SERVICE_NAME", ""), level="DEBUG"
+)
 nest_asyncio.apply()
 
 users_data = []

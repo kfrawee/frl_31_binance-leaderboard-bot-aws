@@ -3,7 +3,7 @@ import os
 import traceback
 from datetime import datetime
 from http import HTTPStatus
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
 
 import aws_lambda_powertools
 import requests
@@ -15,7 +15,6 @@ from .telegram_bot import TelegramBot
 logger = aws_lambda_powertools.Logger(
     service=os.getenv("SERVICE_NAME", ""), level="DEBUG"
 )
-
 telegram_bot_client = TelegramBot()
 
 headers = {

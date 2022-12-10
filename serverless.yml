@@ -26,7 +26,7 @@ provider:
   region: ${opt:region, 'us-east-1'}
   # region: ${opt:region, 'eu-west-3'} # France, Paris
   stage: ${opt:stage, 'dev'}
-  timeout: 29
+  timeout: 60
   versionFunctions: false
 
   environment:

@@ -1,10 +1,13 @@
 import os
-from typing import Dict, List, Generator
+from typing import Dict, Generator, List
+
+import aws_lambda_powertools
 from telegram import Bot, ParseMode
 
-# from telegram.error import RetryAfter, TimedOut
 
-from .helpers import logger
+logger = aws_lambda_powertools.Logger(
+    service=os.getenv("SERVICE_NAME", ""), level="DEBUG"
+)
 
 TELEGRAM_BOT_API_KEY = os.getenv("TELEGRAM_BOT_API_KEY")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
