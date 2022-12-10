@@ -23,8 +23,8 @@ provider:
   name: aws
   runtime: python3.9
   architecture: arm64
-  # region: ${opt:region, 'us-east-1'}
-  region: ${opt:region, 'eu-west-3'} # France, Paris
+  region: ${opt:region, 'us-east-1'}
+  # region: ${opt:region, 'eu-west-3'} # France, Paris
   stage: ${opt:stage, 'dev'}
   timeout: 29
   versionFunctions: false

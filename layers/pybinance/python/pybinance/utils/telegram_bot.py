@@ -176,7 +176,7 @@ class TelegramBot:
                     )
                     message += f"<i>Too many positions to send, sending positions in {chunk_size}s</i>"
                     part_i += 1
-                    message += f"<i> - Part {part_i}:</i>\n\n"
+                    message += f"<i> - <b>Part {part_i}</b>:</i>\n\n"
 
                     for position_data in partial_positions:
                         symbol = position_data.get("Symbol")

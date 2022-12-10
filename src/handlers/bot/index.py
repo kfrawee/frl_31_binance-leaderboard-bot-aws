@@ -1,24 +1,10 @@
 import asyncio
-import json
 from datetime import datetime
-from typing import Dict, List
 from operator import itemgetter
+from typing import Dict, List
 
 import nest_asyncio
-
-# from pybinance.utils.helpers import (
-#     generate_user_data,
-#     get_encrypted_uids,
-#     get_leader_board_rank,
-#     get_trader_performance,
-#     get_trader_positions,
-#     logger,
-# )
-# from pybinance.utils.telegram_bot import TelegramBot
-
-
-## local
-from .utils.helpers import (
+from pybinance.utils.helpers import (
     generate_user_data,
     get_encrypted_uids,
     get_leader_board_rank,
@@ -26,8 +12,7 @@ from .utils.helpers import (
     get_trader_positions,
     logger,
 )
-from .utils.telegram_bot import TelegramBot
-
+from pybinance.utils.telegram_bot import TelegramBot
 
 nest_asyncio.apply()
 
@@ -45,7 +30,7 @@ def background(f):
 @background
 def parallel_f(i: int, trader_rank_data: Dict, uids: List):
     user_rank = i + 1
-    logger.info(f"Processing user {str(user_rank).zfill(2)} uid: {uids[i]}")
+    logger.info(f"#Processing user {str(user_rank).zfill(2)} uid: {uids[i]}")
 
     performance_data = get_trader_performance(uids[i])
     positions_data = get_trader_positions(uids[i])
@@ -90,7 +75,3 @@ def handler(event, _):
         f"Elapsed time #total: {(datetime.utcnow() - start_datetime).total_seconds()}"
     )
     return event
-
-
-if __name__ == "__main__":
-    handler(_, _)

@@ -34,6 +34,8 @@ def extract_datetime(timestamp: int) -> str:
     Returns:
         datetime (str): Datetime.
     """
+    if not timestamp:
+        return "Not available"
     if len(str(timestamp)) > 10:
         timestamp = timestamp // 1000  # remove ms
 
