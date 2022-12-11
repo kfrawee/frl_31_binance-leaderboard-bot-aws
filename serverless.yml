@@ -57,7 +57,7 @@ functions:
       - Ref: PybinanceLambdaLayer
     # events:
       # - schedule: rate(5 minutes) # TEST
-      # - schedule: rate(n minutes) # PRODUCTION
+      # - schedule: rate(30 minutes) # PRODUCTION
       # - schedule: rate(1 hour) # PRODUCTION
       # - schedule: rate(n hours) # PRODUCTION
 
