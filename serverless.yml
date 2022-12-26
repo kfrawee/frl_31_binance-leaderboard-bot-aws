@@ -9,7 +9,7 @@ plugins:
 layers:
   pybinance:
     path: layers/pybinance
-    description: |
+    description: >
       Lambda layer contains helper functions for aws services 
       and other common functions to avoid repeating the code.
     compatibleRuntimes:
@@ -54,7 +54,7 @@ functions:
     description: Main bot handler.
     memorySize: 1024 # test increase to compare time
     layers:
-      - Ref: PybinanceLambdaLayer
+      - !Ref PybinanceLambdaLayer
     # events:
       # - schedule: rate(5 minutes) # TEST
       # - schedule: rate(30 minutes) # PRODUCTION
